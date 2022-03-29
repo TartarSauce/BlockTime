@@ -24,4 +24,22 @@ Follow the installation process and run in Visual Studio. When the console windo
     [['11:30', '12:00'], ['15:00', '15:30'], ['15:30', ;'16:00'], ['18:00', '18:30']]
     
 # Design
+Each input calendar is first organized into a List of Tuples<string, string> where each Tuple represents a free block of time. For eg, Calendar1 input along with dailyBounds1 will result in this intermediate list. Tuples which have the same Item1 and Item2 will be discarded during the processing, so (9:00, 9:00) in this list below will eventually be discarded
+
+        {(9:00, 9:00), (10:30, 12:00), (13:00, 16:00), (18:00, 20:00)}
+        
+The intermediate list is further processed using meeting duration 30m into a List that looks like this. This is basically all 30 min free timeslots for calendar1.
+
+        {(10:30, 11:00), (11:00, 11:30), (11:30, 12:00), (13:00, 13:30), (13:30, 14:00), (14:30, 15:00), (15:00, 15:30), (15:30, 16:00), (18:00, 18:30), (18:30, 19:00), (19:00, 19:30), (19:30, 20:00)}
+        
+A similar process is done for calendar2 and the common timeslots are the result that is printed out to the user.
+        
+# Gotcha and assumptions
+This design uses the string.split method to split the calendar string on the separator "'," that separates a time slot in the input string. So an input like the following where "'," is missing after 12:00 will cause the program to fail.  
+
+        Calendar1 = [['9:00', '10:30'], ['12:00 '13:00', ['16:00', '18:00']]
+        
+The assumption made in this program is that the input string will always be of the right format expected.
+
+
 
