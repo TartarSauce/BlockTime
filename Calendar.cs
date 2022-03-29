@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BlockTime
 {
-    class Calendar
+    public class Calendar
     {
         /// <summary>
         /// Calculate all free time slots on a calendar given a calendar, bounds and meeting duration
@@ -68,7 +68,7 @@ namespace BlockTime
         /// <param name="inputCalendar"></param>
         /// <param name="bounds"></param>
         /// <returns>A string array of all free time slots in the calendar</returns>
-        private string[] ReFormatForFreeTimeSlots(string inputCalendar, string bounds)
+        public string[] ReFormatForFreeTimeSlots(string inputCalendar, string bounds)
         {
             string dropLeadingTrailingBracket = inputCalendar.Trim().Substring(1, inputCalendar.Length - 2);
 
