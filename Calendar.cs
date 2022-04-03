@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace BlockTime
 {
@@ -14,7 +15,7 @@ namespace BlockTime
         /// <returns>List of available time slots</returns>
         public List<Tuple<string, string>> AllFreeTimes(string inputCalendar, string bounds, int meetingDuration)
         {
-            string[] freeTimePeriods = ReFormatForFreeTimeSlots(inputCalendar, bounds);
+            string[] freeTimePeriods = ReFormatForFreeTimeSlots(inputCalendar, bounds);  
             List<Tuple<string, string>> freeTimeSlots = new List<Tuple<string, string>>();
             TimeSpan interval = new TimeSpan(0, meetingDuration, 00);
 
@@ -70,8 +71,12 @@ namespace BlockTime
         /// <returns>A string array of all free time slots in the calendar</returns>
         public string[] ReFormatForFreeTimeSlots(string inputCalendar, string bounds)
         {
-            string dropLeadingTrailingBracket = inputCalendar.Trim().Substring(1, inputCalendar.Length - 2);
+            if (string.IsNullOrEmpty(inputCalendar) || string.IsNullOrEmpty(bounds))
+            {
+                throw new ArgumentException("Either Calendar slots or bounds were not specified in the input");
+            }
 
+            string dropLeadingTrailingBracket = inputCalendar.Trim().Substring(1, inputCalendar.Length - 2);
             string[] freeTimeSlots = dropLeadingTrailingBracket.Split("',", StringSplitOptions.None);
 
             // Include the lower and upper time bounds
@@ -97,17 +102,25 @@ namespace BlockTime
         {
             // hour 
             string[] hourMin = time.Split(":");
-            int hourInt = int.Parse(hourMin[0]);
+            if (hourMin.Length != 2)
+            {
+                throw new ArgumentException("The format of the input calendar is not correct");
+            }
+            int hourInt;
+            if (!int.TryParse(hourMin[0], out hourInt)) hourInt = 0;
             if (hourInt >= 24)
             {
                 throw new ArgumentOutOfRangeException("Invalid hour");
             }
+
             // minute
-            int minuteInt = int.Parse(hourMin[1]);
+            int minuteInt;
+            if (!int.TryParse(hourMin[1], out minuteInt)) minuteInt = 0;
             if (minuteInt >= 60)
             {
                 throw new ArgumentOutOfRangeException("Invalid minute");
             }
+
             // year, day, month is arbitrary
             return new DateTime(year, month, day, hourInt, minuteInt, 0);
         }
@@ -119,11 +132,8 @@ namespace BlockTime
         /// <returns></returns>
         private Tuple<string, string> FormatTimeSlotToTuple(string inputTimeSlot)
         {
-            string[] charsToRemove = new string[] { "[", "]", "'"};
-            foreach (var c in charsToRemove)
-            {
-                inputTimeSlot = inputTimeSlot.Trim().Replace(c, string.Empty);
-            }
+            // remove [, ', ] characters
+            inputTimeSlot = Regex.Replace(inputTimeSlot, @"(\[|'|\])", "");
 
             string[] times = inputTimeSlot.Split(",", StringSplitOptions.None);
             Tuple<string, string> timeslot = Tuple.Create(times[0], times[1]);

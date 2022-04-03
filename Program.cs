@@ -54,7 +54,7 @@ namespace BlockTime
             List<Tuple<string, string>> result = commonFreeTimes.ToList();
 
             Console.WriteLine();
-            if (result.Count != 0)
+            if (result.Any())
             {
                 Console.WriteLine("All common free time slots are as listed:");
                 calendar.PrintTimeSlots(result);
